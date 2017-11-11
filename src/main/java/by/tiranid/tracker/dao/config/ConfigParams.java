@@ -12,7 +12,7 @@ public class ConfigParams {
 
     public static final String hibernate_dialect = "org.hibernate.dialect.MySQLDialect";
     public static final String show_sql = "true";
-    public static final String entitymanager_packages = "by.tiranid.tracker.model";
+    public static final String entitymanager_packages = "by.tiranid.tracker.dao.model";
     public static final String hbm2ddl_auto = "update";
 
 }

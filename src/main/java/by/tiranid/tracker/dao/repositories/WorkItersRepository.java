@@ -1,6 +1,6 @@
-package by.tiranid.tracker.dao.dao;
+package by.tiranid.tracker.dao.repositories;
 
-import by.tiranid.tracker.model.WorkItersEntity;
+import by.tiranid.tracker.dao.model.WorkItersEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Date;

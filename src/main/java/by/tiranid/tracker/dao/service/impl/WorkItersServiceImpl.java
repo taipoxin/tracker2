@@ -1,7 +1,7 @@
 package by.tiranid.tracker.dao.service.impl;
 
-import by.tiranid.tracker.dao.dao.WorkItersRepository;
-import by.tiranid.tracker.model.WorkItersEntity;
+import by.tiranid.tracker.dao.model.WorkItersEntity;
+import by.tiranid.tracker.dao.repositories.WorkItersRepository;
 import by.tiranid.tracker.dao.service.WorkItersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

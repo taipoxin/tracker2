@@ -1,10 +1,9 @@
 package by.tiranid.tracker.dao.service;
 
 
-import by.tiranid.tracker.model.WorkDaysEntity;
+import by.tiranid.tracker.dao.model.WorkDaysEntity;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 

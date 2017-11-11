@@ -1,12 +1,9 @@
-package by.tiranid.tracker.container;
+package by.tiranid.tracker;
 
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.io.File;
 
 
 @SpringBootApplication
@@ -27,30 +24,7 @@ public class AppConfig {
             "\tЕстественная\n" +
             "\tИскусственная (вытяжная местная общая)\n" +
             "\t\tПриточная\n" +
-            "\tСмешанная(приточно - вытяжная)\n" +
-            "\t\n" +
-            "\tПо зоне обслуживания:\n" +
-            "\t\tместные\n" +
-            "\t\tобщие\n" +
-            "\t\t\n" +
-            "\tпо конструкции: \n" +
-            "\t\tканальные\n" +
-            "\t\tбесканальные\n" +
-            "\t\t\n" +
-            "\t\n" +
-            "Влажность измеряется гигрометром психометрическим (как температуру, так и влажность можно)\n" +
-            "\n" +
-            "\t\n" +
-            "\t\n" +
-            "Виды освещения:\n" +
-            "\n" +
-            "Естественное (боковое, верхнее)\n" +
-            "\n" +
-            "Искусственная (Местное, общая, локальное)\n" +
-            "\n" +
-            "Измеряется люксометром (в люксах)\n" +
-            "\n" +
-            "\n</h1>";
+            "\tСмешанная(приточно - вытяжная)\n" + "</h1>";
 
     public static void main(String[] args){
         SpringApplication.run(AppConfig.class);

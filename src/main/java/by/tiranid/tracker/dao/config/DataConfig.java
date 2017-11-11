@@ -1,7 +1,5 @@
 package by.tiranid.tracker.dao.config;
 
-import org.hibernate.ejb.HibernatePersistence;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -18,7 +16,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "by.tiranid.tracker.dao.dao"
+        basePackages = "by.tiranid.tracker.dao.repositories"
 )
 public class DataConfig {
 

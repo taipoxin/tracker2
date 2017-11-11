@@ -1,13 +1,12 @@
 package by.tiranid.tracker.dao.service.impl;
 
-import by.tiranid.tracker.dao.dao.WorkDaysRepository;
-import by.tiranid.tracker.model.WorkDaysEntity;
+import by.tiranid.tracker.dao.model.WorkDaysEntity;
+import by.tiranid.tracker.dao.repositories.WorkDaysRepository;
+import by.tiranid.tracker.dao.service.WorkDaysService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import by.tiranid.tracker.dao.service.WorkDaysService;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 

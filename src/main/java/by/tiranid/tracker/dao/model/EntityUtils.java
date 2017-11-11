@@ -1,10 +1,16 @@
-package by.tiranid.tracker.model;
+package by.tiranid.tracker.dao.model;
 
 import java.sql.Date;
 import java.sql.Time;
 
 public class EntityUtils {
 
+    /**
+     * @param date  yyyy-[m]m-[d]d
+     * @param iters 0-127
+     * @param time  hh:mm:ss
+     * @return
+     */
     public static WorkDaysEntity createTestWorkDaysEntity(String date, Byte iters, String time)  {
         WorkDaysEntity record = new WorkDaysEntity();
 
@@ -15,6 +21,14 @@ public class EntityUtils {
         return record;
     }
 
+    /**
+     *
+     * @param date yyyy-[m]m-[d]d
+     * @param time hh:mm:ss
+     * @param duration hh:mm:ss
+     * @return
+     * @throws Exception
+     */
     public static WorkItersEntity createTestWorkItersEntity(String date, String time, String duration) throws Exception {
         WorkItersEntity record = new WorkItersEntity();
         // yyyy-[m]m-[d]d

@@ -1,7 +1,7 @@
 package by.tiranid.tracker.dao.service;
 
 
-import by.tiranid.tracker.model.WorkItersEntity;
+import by.tiranid.tracker.dao.model.WorkItersEntity;
 
 import java.sql.Date;
 import java.sql.Time;

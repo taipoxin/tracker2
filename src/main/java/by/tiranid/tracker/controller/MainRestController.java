@@ -1,15 +1,14 @@
-package by.tiranid.tracker.container.api.controller;
+package by.tiranid.tracker.controller;
 
-import by.tiranid.tracker.container.AppConfig;
-import by.tiranid.tracker.dao.dao.WorkDaysRepository;
-import by.tiranid.tracker.dao.dao.WorkItersRepository;
+import by.tiranid.tracker.AppConfig;
+import by.tiranid.tracker.dao.model.EntityUtils;
+import by.tiranid.tracker.dao.model.WorkItersEntity;
+import by.tiranid.tracker.dao.repositories.WorkDaysRepository;
+import by.tiranid.tracker.dao.repositories.WorkItersRepository;
 import by.tiranid.tracker.dao.service.WorkDaysService;
 import by.tiranid.tracker.dao.service.WorkItersService;
 import by.tiranid.tracker.dao.service.impl.WorkItersServiceImpl;
-import by.tiranid.tracker.model.EntityUtils;
-import by.tiranid.tracker.model.WorkItersEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +21,14 @@ import java.util.regex.Pattern;
 
 
 @RestController
+@Slf4j
 public class MainRestController {
 
-    private static final Logger log = LoggerFactory.getLogger(MainRestController.class);
     private static int userHash = -442696469;
     @Autowired
     private WorkDaysRepository workDaysRepository;
     private WorkDaysService workDaysService;
+
     @Autowired
     private WorkItersRepository workItersRepository;
     private WorkItersService workItersService;
