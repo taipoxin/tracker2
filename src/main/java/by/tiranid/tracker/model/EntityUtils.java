@@ -15,10 +15,14 @@ public class EntityUtils {
         return record;
     }
 
-    public static WorkItersEntity createTestWorkItersEntity(String date, String time) throws Exception {
+    public static WorkItersEntity createTestWorkItersEntity(String date, String time, String duration) throws Exception {
         WorkItersEntity record = new WorkItersEntity();
+        // yyyy-[m]m-[d]d
         record.setDdate(Date.valueOf(date));
+        // hh:mm:ss
         record.setTtime(Time.valueOf(time));
+        // hh:mm:ss
+        record.setDuration(Time.valueOf(duration));
         return record;
     }
 

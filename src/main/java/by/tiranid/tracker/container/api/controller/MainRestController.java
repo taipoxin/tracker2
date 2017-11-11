@@ -6,17 +6,18 @@ import by.tiranid.tracker.dao.dao.WorkItersRepository;
 import by.tiranid.tracker.dao.service.WorkDaysService;
 import by.tiranid.tracker.dao.service.WorkItersService;
 import by.tiranid.tracker.dao.service.impl.WorkItersServiceImpl;
+import by.tiranid.tracker.model.EntityUtils;
 import by.tiranid.tracker.model.WorkItersEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.sql.Date;
 import java.sql.Time;
-import java.util.regex.Matcher;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -31,6 +32,40 @@ public class MainRestController {
     @Autowired
     private WorkItersRepository workItersRepository;
     private WorkItersService workItersService;
+
+    @RequestMapping(value = {"/get"}, method = RequestMethod.GET)
+    public String getIters() {
+        if (workItersService == null) {
+            workItersService = new WorkItersServiceImpl(workItersRepository);
+        }
+        List<WorkItersEntity> l = workItersService.getAll();
+        StringBuilder builder = new StringBuilder();
+        for (WorkItersEntity ent : l) {
+            builder.append(ent.toString());
+            builder.append("\n");
+        }
+
+        return changeNtoBr(builder.toString());
+    }
+
+    @RequestMapping(value = {"/put"}, method = RequestMethod.GET)
+    public String putIter() {
+        if (workItersService == null) {
+            workItersService = new WorkItersServiceImpl(workItersRepository);
+        }
+        try {
+            workItersService.addRecord(EntityUtils.createTestWorkItersEntity("2017-11-11", "10:45:00", "00:25:00"));
+        } catch (Exception e) {
+        }
+        List<WorkItersEntity> l = workItersService.getAll();
+        StringBuilder builder = new StringBuilder();
+        for (WorkItersEntity ent : l) {
+            builder.append(ent.toString());
+            builder.append("\n");
+        }
+
+        return changeNtoBr(builder.toString());
+    }
 
     @RequestMapping(value = {"/postIter"}, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
