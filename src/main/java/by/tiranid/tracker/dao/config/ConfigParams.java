@@ -6,7 +6,7 @@ public class ConfigParams {
     // DataConfig
     public static final String username = "tiranid";
     public static final String password = "6559520";
-    public static final String db_url = "jdbc:mysql://localhost:3306/test?verifyServerCertificate=false&useSSL=true";
+    public static final String db_url = "jdbc:mysql://localhost:3306/dev?verifyServerCertificate=false&useSSL=true";
 
     public static final String db_driver = "com.mysql.jdbc.Driver";
 

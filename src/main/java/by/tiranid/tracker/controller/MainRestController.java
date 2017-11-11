@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -48,13 +49,19 @@ public class MainRestController {
         return changeNtoBr(builder.toString());
     }
 
+    public String getCurrentTimeString() {
+        LocalTime t = LocalTime.now();
+        return t.getHour() + ":" + t.getMinute() + ":" + t.getSecond();
+    }
+
     @RequestMapping(value = {"/put"}, method = RequestMethod.GET)
     public String putIter() {
         if (workItersService == null) {
             workItersService = new WorkItersServiceImpl(workItersRepository);
         }
         try {
-            workItersService.addRecord(EntityUtils.createTestWorkItersEntity("2017-11-11", "10:45:00", "00:25:00"));
+            String currentTime = getCurrentTimeString();
+            workItersService.addRecord(EntityUtils.createTestWorkItersEntity("2017-11-11", currentTime, "00:25:00"));
         } catch (Exception e) {
         }
         List<WorkItersEntity> l = workItersService.getAll();
