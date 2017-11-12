@@ -1,7 +1,11 @@
 package by.tiranid.tracker.dao.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
+@EqualsAndHashCode
 public class Greeting {
 
     @Getter

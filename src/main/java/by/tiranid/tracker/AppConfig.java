@@ -1,14 +1,37 @@
 package by.tiranid.tracker;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SpringBootApplication
-@ComponentScan("by.tiranid.tracker")
+@EnableScheduling
+@Slf4j
 public class AppConfig {
+
+    // start scheduling part
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+
+    /**
+     * fixedRate - интервал между вызовами начиная с начала работы
+     * fixedDelay - интервал между вызовами начиная с окончания работы
+     * show time every 5 seconds
+     */
+    @Scheduled(fixedRate = 5000)
+    public void reportCurrentTime() {
+        log.info("The time is now: " + dateFormat.format(new Date()));
+
+    }
+
+    // end scheduling part
+
 
     public static final String message = "<h1>Микроклимат \n" +
             "\n" +
@@ -29,4 +52,5 @@ public class AppConfig {
     public static void main(String[] args){
         SpringApplication.run(AppConfig.class);
     }
+
 }

@@ -9,12 +9,17 @@ import by.tiranid.tracker.dao.repositories.WorkItersRepository;
 import by.tiranid.tracker.dao.service.WorkDaysService;
 import by.tiranid.tracker.dao.service.WorkItersService;
 import by.tiranid.tracker.dao.service.impl.WorkItersServiceImpl;
+import by.tiranid.tracker.learning.consuming_json.JsonPage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalTime;
@@ -38,6 +43,62 @@ public class MainRestController {
 
 
     private AtomicLong counter = new AtomicLong();
+
+
+    /**
+     * example of input : "static/json/test.json" is like (.../resources/static/json/test.json)
+     *
+     * @param innerFoldersPath path without start "/" inside "resource" project path
+     * @return string with working path
+     */
+    public static String getPathFromResourcePath(String innerFoldersPath) {
+        return ClassLoader.getSystemResource(innerFoldersPath).getFile();
+    }
+
+
+    /**
+     * retrieve json file from resources
+     *
+     * @return json file in string format
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/jsonFromRes"}, method = RequestMethod.POST)
+    public @ResponseBody
+    String getJsonFromFile() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        File file = new File(getPathFromResourcePath("static/json/test.json"));
+        Object json = mapper.readValue(file, Object.class);
+        String s = mapper.writeValueAsString(json);
+        return s;
+    }
+
+    @RequestMapping(value = {"/jsonFromRes"}, method = RequestMethod.GET)
+    public @ResponseBody
+    String getJsonFromString() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String s = "{" +
+                "\"id\": \"161112704050757\", " +
+                "\"name\": \"Computer Services\"," +
+                "\"phone\": \"(650) 286-8012\"," +
+                "\"website\": \"http://www.gopivotal.com\"" +
+                "}";
+        return s;
+    }
+
+
+    /**
+     * retrive json file with variables, existing in JsonPage
+     * only if resource is retrived by GET method
+     *
+     * @return json object if resource page have GET method, else - 500 code
+     */
+    @RequestMapping(value = {"/showJson"}, method = RequestMethod.GET)
+    public JsonPage showJson() {
+        RestTemplate restTemplate = new RestTemplate();
+        // only for res with GET method
+        JsonPage page = restTemplate.getForObject("http://localhost:8080/jsonFromRes", JsonPage.class);
+        return page;
+    }
 
     /**
      * return json view of Greeting
