@@ -1,6 +1,5 @@
 package by.tiranid.tracker.controller;
 
-import by.tiranid.tracker.AppConfig;
 import by.tiranid.tracker.dao.model.EntityUtils;
 import by.tiranid.tracker.dao.model.Greeting;
 import by.tiranid.tracker.dao.model.WorkItersEntity;
@@ -252,15 +251,6 @@ public class MainRestController {
 
     private String changeNtoBr(String message) {
         return Pattern.compile("\n").matcher(message).replaceAll("<br/>");
-    }
-
-    /**
-     * show html string
-     * @return
-     */
-    @RequestMapping(value = {"/"}, method = RequestMethod.GET)
-    public String mainHello() {
-        return changeNtoBr(AppConfig.message);
     }
 
 
