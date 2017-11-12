@@ -4,11 +4,11 @@ import by.tiranid.tracker.AppConfig;
 import by.tiranid.tracker.dao.model.EntityUtils;
 import by.tiranid.tracker.dao.model.Greeting;
 import by.tiranid.tracker.dao.model.WorkItersEntity;
-import by.tiranid.tracker.dao.repositories.WorkDaysRepository;
-import by.tiranid.tracker.dao.repositories.WorkItersRepository;
-import by.tiranid.tracker.dao.service.WorkDaysService;
-import by.tiranid.tracker.dao.service.WorkItersService;
-import by.tiranid.tracker.dao.service.impl.WorkItersServiceImpl;
+import by.tiranid.tracker.dao.repository.WorkDaysRepository;
+import by.tiranid.tracker.dao.repository.WorkItersRepository;
+import by.tiranid.tracker.dao.repository.custom.WorkDaysRepositoryCustom;
+import by.tiranid.tracker.dao.repository.custom.WorkItersRepositoryCustom;
+import by.tiranid.tracker.dao.repository.custom.WorkItersRepositoryCustomImpl;
 import by.tiranid.tracker.learning.consuming_json.JsonPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
@@ -41,11 +39,11 @@ public class MainRestController {
     private static int userHash = -442696469;
     @Autowired
     private WorkDaysRepository workDaysRepository;
-    private WorkDaysService workDaysService;
+    private WorkDaysRepositoryCustom workDaysRepositoryCustom;
 
     @Autowired
     private WorkItersRepository workItersRepository;
-    private WorkItersService workItersService;
+    private WorkItersRepositoryCustom workItersRepositoryCustom;
 
 
     private AtomicLong counter = new AtomicLong();
@@ -81,9 +79,7 @@ public class MainRestController {
 
     @RequestMapping("/upFile")
     public ModelAndView upFileHTML() {
-        Map<String, String> model = new HashMap<>();
-        model.put("id", "" + counter);
-        return new ModelAndView("upload", model);
+        return new ModelAndView("upload");
     }
 
 
@@ -167,10 +163,10 @@ public class MainRestController {
      */
     @RequestMapping(value = {"/get"}, method = RequestMethod.GET)
     public String getIters() {
-        if (workItersService == null) {
-            workItersService = new WorkItersServiceImpl(workItersRepository);
+        if (workItersRepositoryCustom == null) {
+            workItersRepositoryCustom = new WorkItersRepositoryCustomImpl(workItersRepository);
         }
-        List<WorkItersEntity> l = workItersService.getAll();
+        List<WorkItersEntity> l = workItersRepository.findAll();
         StringBuilder builder = new StringBuilder();
         for (WorkItersEntity ent : l) {
             builder.append(ent.toString());
@@ -195,15 +191,13 @@ public class MainRestController {
      */
     @RequestMapping(value = {"/put"}, method = RequestMethod.GET)
     public String putIter() {
-        if (workItersService == null) {
-            workItersService = new WorkItersServiceImpl(workItersRepository);
-        }
+
         try {
             String currentTime = getCurrentTimeString();
-            workItersService.addRecord(EntityUtils.createTestWorkItersEntity("2017-11-11", currentTime, "00:25:00"));
+            workItersRepository.save(EntityUtils.createTestWorkItersEntity("2017-11-11", currentTime, "00:25:00"));
         } catch (Exception e) {
         }
-        List<WorkItersEntity> l = workItersService.getAll();
+        List<WorkItersEntity> l = workItersRepository.findAll();
         StringBuilder builder = new StringBuilder();
         for (WorkItersEntity ent : l) {
             builder.append(ent.toString());
@@ -226,8 +220,8 @@ public class MainRestController {
         log.info("retrieved time: " + time);
         if (Integer.valueOf(hash) == -442696469) {
             userHash = Integer.valueOf(hash);
-            if (workItersService == null) {
-                workItersService = new WorkItersServiceImpl(workItersRepository);
+            if (workItersRepositoryCustom == null) {
+                workItersRepositoryCustom = new WorkItersRepositoryCustomImpl(workItersRepository);
             }
             long t = Long.valueOf(time);
             WorkItersEntity entity = new WorkItersEntity();
@@ -236,7 +230,7 @@ public class MainRestController {
             log.info("adding new entity: ");
             log.info(entity.getDdate().toString());
             log.info(entity.getTtime().toString());
-            workItersService.addRecord(entity);
+            workItersRepository.save(entity);
             return ResponseEntity.ok();
         } else {
             log.warn("sorry");

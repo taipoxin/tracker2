@@ -16,7 +16,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "by.tiranid.tracker.dao.repositories"
+        basePackages = "by.tiranid.tracker.dao.repository"
 )
 public class TestDataBaseConfig {
 

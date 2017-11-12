@@ -1,15 +1,9 @@
 package by.tiranid.tracker.dao.service;
 
 import by.tiranid.tracker.dao.config.TestDataBaseConfig;
-import by.tiranid.tracker.dao.model.WorkDaysEntity;
-import by.tiranid.tracker.dao.repositories.WorkDaysRepository;
-import by.tiranid.tracker.dao.service.impl.WorkDaysServiceImpl;
+import by.tiranid.tracker.dao.repository.WorkDaysRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,9 +11,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-
-import java.sql.Date;
-import java.util.List;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,12 +30,12 @@ public class WorkDaysServiceTest {
     private static final String recordSampleWorkTime = "9:13;16:18;";
     @Autowired
     private WorkDaysRepository workDaysRepository;
-
-    private WorkDaysService workDaysService;
+/*
+    private WorkDaysRepositoryCustom workDaysRepositoryCustom;
 
     @Before
     public void setUp() throws Exception {
-        workDaysService = new WorkDaysServiceImpl(workDaysRepository);
+        workDaysRepositoryCustom = new WorkDaysRepositoryCustomImpl(workDaysRepository);
     }
 
 
@@ -62,8 +53,8 @@ public class WorkDaysServiceTest {
     @Test
     public void testAddRecord() throws Exception {
         WorkDaysEntity record = createTestWorkDaysEntity();
-        workDaysService.addRecord(record);
-        WorkDaysEntity record2 = workDaysService.getFirst();
+        workDaysRepositoryCustom.addRecord(record);
+        WorkDaysEntity record2 = workDaysRepositoryCustom.getFirst();
         Assert.assertEquals(record, record2);
     }
 
@@ -72,19 +63,19 @@ public class WorkDaysServiceTest {
     public void testEditRecord() throws Exception {
         WorkDaysEntity record = createTestWorkDaysEntity();
         record.setIterations((byte) 3);
-        record = workDaysService.addRecord(record);
+        record = workDaysRepositoryCustom.addRecord(record);
         Byte iterCountTest = 5;
         record.setIterations(iterCountTest);
         // with addRecord the same editing
-        workDaysService.editRecord(record);
-        Assert.assertEquals(iterCountTest, workDaysService.getFirst().getIterations());
+        workDaysRepositoryCustom.editRecord(record);
+        Assert.assertEquals(iterCountTest, workDaysRepositoryCustom.getFirst().getIterations());
     }
 
 
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetFirstById() throws Exception {
-        WorkDaysEntity entity = workDaysService.getFirstById(recordSampleId);
+        WorkDaysEntity entity = workDaysRepositoryCustom.getFirstById(recordSampleId);
         Assert.assertEquals(recordSampleId, entity.getId());
     }
 
@@ -93,7 +84,7 @@ public class WorkDaysServiceTest {
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetFirstByWorkDate() throws Exception {
         Date dt = Date.valueOf(recordSampleWorkDate);
-        WorkDaysEntity entity = workDaysService.getFirstByWorkDate(dt);
+        WorkDaysEntity entity = workDaysRepositoryCustom.getFirstByWorkDate(dt);
         Assert.assertEquals(dt, entity.getWorkDate());
     }
 
@@ -101,7 +92,7 @@ public class WorkDaysServiceTest {
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetFirstByIterations() throws Exception {
-        WorkDaysEntity entity = workDaysService.getFirstByIterations(recordSampleIterations);
+        WorkDaysEntity entity = workDaysRepositoryCustom.getFirstByIterations(recordSampleIterations);
         Assert.assertEquals(recordSampleIterations, entity.getIterations());
     }
 
@@ -109,7 +100,7 @@ public class WorkDaysServiceTest {
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetFirstByWorkTime() throws Exception {
-        WorkDaysEntity entity = workDaysService.getFirstByWorkTime(recordSampleWorkTime);
+        WorkDaysEntity entity = workDaysRepositoryCustom.getFirstByWorkTime(recordSampleWorkTime);
         Assert.assertEquals(recordSampleWorkTime, entity.getWorkTime());
     }
 
@@ -118,24 +109,24 @@ public class WorkDaysServiceTest {
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetLast() throws Exception {
         WorkDaysEntity record1 = createTestWorkDaysEntity();
-        workDaysService.addRecord(record1);
-        WorkDaysEntity record = workDaysService.getLast();
+        workDaysRepositoryCustom.addRecord(record1);
+        WorkDaysEntity record = workDaysRepositoryCustom.getLast();
         Assert.assertEquals(record1, record);
     }
 
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetFirst() throws Exception {
-        workDaysService.addRecord(createTestWorkDaysEntity());
-        WorkDaysEntity record = workDaysService.getFirst();
+        workDaysRepositoryCustom.addRecord(createTestWorkDaysEntity());
+        WorkDaysEntity record = workDaysRepositoryCustom.getFirst();
         Assert.assertEquals(recordSampleId, record.getId());
     }
 
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testDelete() throws Exception {
-        workDaysService.delete(recordSampleId);
-        WorkDaysEntity record2 = workDaysService.getFirstById(recordSampleId);
+        workDaysRepositoryCustom.delete(recordSampleId);
+        WorkDaysEntity record2 = workDaysRepositoryCustom.getFirstById(recordSampleId);
         Assert.assertNull(record2);
     }
 
@@ -143,16 +134,16 @@ public class WorkDaysServiceTest {
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetByWorkDate() throws Exception {
-        workDaysService.addRecord(createTestWorkDaysEntity());
-        List<WorkDaysEntity> list = workDaysService.getByWorkDate(Date.valueOf(recordSampleWorkDate));
+        workDaysRepositoryCustom.addRecord(createTestWorkDaysEntity());
+        List<WorkDaysEntity> list = workDaysRepositoryCustom.getByWorkDate(Date.valueOf(recordSampleWorkDate));
         Assert.assertEquals(2, list.size());
     }
 
     @Test
     @DatabaseSetup(WorkDaysServiceTest.DB_SETUP)
     public void testGetByIterations() throws Exception {
-        workDaysService.addRecord(createTestWorkDaysEntity());
-        List<WorkDaysEntity> list = workDaysService.getByIterations(recordSampleIterations);
+        workDaysRepositoryCustom.addRecord(createTestWorkDaysEntity());
+        List<WorkDaysEntity> list = workDaysRepositoryCustom.getByIterations(recordSampleIterations);
         Assert.assertEquals(2, list.size());
-    }
+    }*/
 }

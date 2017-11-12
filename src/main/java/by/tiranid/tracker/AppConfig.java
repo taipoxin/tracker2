@@ -18,6 +18,8 @@ import java.util.Date;
 @Slf4j
 public class AppConfig {
 
+    private static boolean enableTimer = false;
+
     // start scheduling part
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
@@ -29,7 +31,9 @@ public class AppConfig {
      */
     @Scheduled(fixedRate = 5000)
     public void reportCurrentTime() {
-        log.info("The time is now: " + dateFormat.format(new Date()));
+        if (enableTimer) {
+            log.info("The time is now: " + dateFormat.format(new Date()));
+        }
 
     }
 

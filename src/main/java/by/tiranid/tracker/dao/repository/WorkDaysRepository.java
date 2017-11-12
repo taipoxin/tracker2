@@ -1,4 +1,4 @@
-package by.tiranid.tracker.dao.repositories;
+package by.tiranid.tracker.dao.repository;
 
 import by.tiranid.tracker.dao.model.WorkDaysEntity;
 import org.springframework.data.repository.CrudRepository;
@@ -7,17 +7,13 @@ import java.sql.Date;
 import java.util.List;
 
 
-public interface WorkDaysRepository extends CrudRepository<WorkDaysEntity, Long> {
-
-
-	
-
+public interface WorkDaysRepository extends CrudRepository<WorkDaysEntity, Long>/*,
+        WorkDaysRepositoryCustom*/ {
 
     WorkDaysEntity findFirstById(Long id);
     WorkDaysEntity findFirstByWorkDate(Date workDate);
     WorkDaysEntity findFirstByIterations(Byte iterations);
     WorkDaysEntity findFirstByWorkTime(String workTime);
-
 
 
     List<WorkDaysEntity> findByWorkDate(Date workDate);
