@@ -4,9 +4,12 @@ package by.tiranid.tracker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.servlet.MultipartConfigElement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,6 +35,15 @@ public class AppConfig {
 
     // end scheduling part
 
+
+    // соответствует <multipart-config> в web.xml
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setMaxFileSize("128KB");
+        factory.setMaxRequestSize("128KB");
+        return factory.createMultipartConfig();
+    }
 
     public static final String message = "<h1>Микроклимат \n" +
             "\n" +

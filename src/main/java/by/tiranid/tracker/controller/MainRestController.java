@@ -17,13 +17,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
@@ -44,6 +50,44 @@ public class MainRestController {
 
     private AtomicLong counter = new AtomicLong();
 
+
+    // file uploading
+
+    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    public @ResponseBody
+    String provideUploadInfo() {
+        return "Вы можете загружать файл с использованием того же URL.";
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody
+    String handleFileUpload(@RequestParam("name") String name,
+                            @RequestParam("file") MultipartFile file) {
+        if (!file.isEmpty()) {
+            try {
+                byte[] bytes = file.getBytes();
+                BufferedOutputStream stream =
+                        new BufferedOutputStream(new FileOutputStream(new File(name + "-uploaded")));
+                stream.write(bytes);
+                stream.close();
+                return "Вы удачно загрузили " + name + " в " + name + "-uploaded !";
+            } catch (Exception e) {
+                return "Вам не удалось загрузить " + name + " => " + e.getMessage();
+            }
+        } else {
+            return "Вам не удалось загрузить " + name + " потому что файл пустой.";
+        }
+    }
+
+    @RequestMapping("/upFile")
+    public ModelAndView upFileHTML() {
+        Map<String, String> model = new HashMap<>();
+        model.put("id", "" + counter);
+        return new ModelAndView("upload", model);
+    }
+
+
+    // json retrieving via objects
 
     /**
      * example of input : "static/json/test.json" is like (.../resources/static/json/test.json)
@@ -90,15 +134,19 @@ public class MainRestController {
      * retrive json file with variables, existing in JsonPage
      * only if resource is retrived by GET method
      *
-     * @return json object if resource page have GET method, else - 500 code
+     * @return json object else - 500 code
      */
     @RequestMapping(value = {"/showJson"}, method = RequestMethod.GET)
     public JsonPage showJson() {
         RestTemplate restTemplate = new RestTemplate();
-        // only for res with GET method
+        // for get request:
         JsonPage page = restTemplate.getForObject("http://localhost:8080/jsonFromRes", JsonPage.class);
+        // for post request:
+        //JsonPage page = restTemplate.postForObject("http://localhost:8080/jsonFromRes", JsonPage.class);
         return page;
     }
+
+    // object retrieving like json
 
     /**
      * return json view of Greeting
