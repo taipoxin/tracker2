@@ -36,12 +36,12 @@ public class VaadinUI extends UI {
         // to place grid on the center
         VerticalLayout vLayout = new VerticalLayout();
         CenterPanel itersPanel = new CenterPanel(itersGrid);
-        CenterPanel daysPanel = new CenterPanel(daysGrid);
+        //CenterPanel daysPanel = new CenterPanel(daysGrid);
         vLayout.addComponent(itersPanel);
-        vLayout.addComponent(daysPanel);
+        //vLayout.addComponent(daysPanel);
         vLayout.setSizeFull();
         vLayout.setComponentAlignment(itersPanel, Alignment.MIDDLE_CENTER);
-        vLayout.setComponentAlignment(daysPanel, Alignment.MIDDLE_CENTER);
+        //vLayout.setComponentAlignment(daysPanel, Alignment.MIDDLE_CENTER+100);
 
         this.setContent(vLayout);
         listCustomers();

@@ -1,20 +1,14 @@
 package by.tiranid.tracker.controller;
 
-import by.tiranid.tracker.AppConfig;
 import by.tiranid.tracker.dao.model.EntityUtils;
 import by.tiranid.tracker.dao.model.Greeting;
 import by.tiranid.tracker.dao.model.WorkItersEntity;
-import by.tiranid.tracker.dao.repository.WorkDaysRepository;
 import by.tiranid.tracker.dao.repository.WorkItersRepository;
-import by.tiranid.tracker.dao.repository.custom.WorkDaysRepositoryCustom;
 import by.tiranid.tracker.dao.repository.custom.WorkItersRepositoryCustom;
-import by.tiranid.tracker.dao.repository.custom.WorkItersRepositoryCustomImpl;
 import by.tiranid.tracker.learning.consuming_json.JsonPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Pattern;
+
 
 
 @RestController
@@ -37,16 +30,96 @@ import java.util.regex.Pattern;
 public class MainRestController {
 
     private static int userHash = -442696469;
-    @Autowired
-    private WorkDaysRepository workDaysRepository;
-    private WorkDaysRepositoryCustom workDaysRepositoryCustom;
 
     @Autowired
     private WorkItersRepository workItersRepository;
+
     private WorkItersRepositoryCustom workItersRepositoryCustom;
 
-
     private AtomicLong counter = new AtomicLong();
+
+    private WorkItersEntity genEntityFromParams(String date, String time, String duration) {
+        WorkItersEntity entity = new WorkItersEntity();
+        // setting time
+        Time cTime = RestUtils.convertStringToTime(time);
+        log.info("Time param converted from " + time + " to " + (cTime != null ? cTime.toString() : null));
+        entity.setTtime(cTime);
+
+        // setting date
+        Date cDate = RestUtils.convertStringToDate(date);
+        log.info("Date param converted from " + date + " to " + (cDate != null ? cDate.toString() : null));
+        entity.setDdate(cDate);
+
+        // setting duration
+        Time cDuration = RestUtils.convertStringToDurationTime(duration);
+        log.info("Duration param converted from " + duration + " to " + (cDuration != null ? cDuration.toString() : null));
+        entity.setDuration(cDuration);
+
+        return entity;
+    }
+
+    /**
+     * handle json
+     *
+     * @param hash, date, time, duration
+     * @return OK/Bad request codes
+     */
+    @RequestMapping(value = {"/postIter"}, method = RequestMethod.POST)
+    public @ResponseBody
+    String postIterDirectly(
+            @RequestParam String hash,
+            @RequestParam String date,
+            @RequestParam String time,
+            @RequestParam String duration) {
+
+        return postIterByJsonBody(new IterationRequest(hash, date, time, duration));
+    }
+
+    /**
+     * handle json
+     *
+     * @param iterationRequest body with params hash, date, time, duration
+     * @return OK/Bad request codes
+     */
+    @RequestMapping(value = {"/postIter"}, method = RequestMethod.POST, consumes = "application/json")
+    public @ResponseBody
+    String postIterByJsonBody(@RequestBody IterationRequest iterationRequest) {
+        if (iterationRequest == null) {
+            return null;
+        }
+
+        String date = iterationRequest.getDate();
+        String time = iterationRequest.getTime();
+        String duration = iterationRequest.getDuration();
+        if (date.equals("")) date = null;
+        if (time.equals("")) time = null;
+        if (duration.equals("")) duration = null;
+
+        if (Integer.valueOf(iterationRequest.getHash()) == userHash) {
+            WorkItersEntity entity = genEntityFromParams(date, time, duration);
+            workItersRepository.save(entity);
+            return "Status code: 200 (OK)";
+        }
+        return "Status code : 400 (BAD_REQUEST)";
+    }
+
+    /**
+     * @return just HTTP OK code
+     */
+    @RequestMapping(value = {"/postIter"}, method = RequestMethod.GET)
+    public @ResponseBody
+    String getToPostIter() {
+        log.info("get request to postIter");
+        log.info("Returning OK Http Code");
+        return "Status code: 200 (OK)";
+    }
+
+
+
+
+
+
+
 
 
     // file uploading
@@ -82,9 +155,7 @@ public class MainRestController {
         return new ModelAndView("upload");
     }
 
-
     // json retrieving via objects
-
     /**
      * example of input : "static/json/test.json" is like (.../resources/static/json/test.json)
      *
@@ -94,7 +165,6 @@ public class MainRestController {
     public static String getPathFromResourcePath(String innerFoldersPath) {
         return ClassLoader.getSystemResource(innerFoldersPath).getFile();
     }
-
 
     /**
      * retrieve json file from resources
@@ -125,7 +195,6 @@ public class MainRestController {
         return s;
     }
 
-
     /**
      * retrive json file with variables, existing in JsonPage
      * only if resource is retrived by GET method
@@ -143,7 +212,6 @@ public class MainRestController {
     }
 
     // object retrieving like json
-
     /**
      * return json view of Greeting
      *
@@ -163,9 +231,6 @@ public class MainRestController {
      */
     @RequestMapping(value = {"/get"}, method = RequestMethod.GET)
     public String getIters() {
-        if (workItersRepositoryCustom == null) {
-            workItersRepositoryCustom = new WorkItersRepositoryCustomImpl(workItersRepository);
-        }
         List<WorkItersEntity> l = workItersRepository.findAll();
         StringBuilder builder = new StringBuilder();
         for (WorkItersEntity ent : l) {
@@ -173,16 +238,7 @@ public class MainRestController {
             builder.append("\n");
         }
 
-        return changeNtoBr(builder.toString());
-    }
-
-    /**
-     * current local time (by user's PC time) converted to "hh:mm:ss" format
-     * @return current local time in "hh:mm:ss" format
-     */
-    public String getCurrentTimeString() {
-        LocalTime t = LocalTime.now();
-        return t.getHour() + ":" + t.getMinute() + ":" + t.getSecond();
+        return RestUtils.changeNtoBr(builder.toString());
     }
 
     /**
@@ -193,7 +249,7 @@ public class MainRestController {
     public String putIter() {
 
         try {
-            String currentTime = getCurrentTimeString();
+            String currentTime = RestUtils.getCurrentTimeString();
             workItersRepository.save(EntityUtils.createTestWorkItersEntity("2017-11-11", currentTime, "00:25:00"));
         } catch (Exception e) {
         }
@@ -204,63 +260,7 @@ public class MainRestController {
             builder.append("\n");
         }
 
-        return changeNtoBr(builder.toString());
-    }
-
-    /**
-     * post iterations to database
-     * @param hash user hash (for auth)
-     * @param time time in "hh:mm:ss" format
-     * @return OK if successfully saved, otherwise - EXPECTATION FAILED
-     */
-    @RequestMapping(value = {"/postIter"}, method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity.BodyBuilder postIter(@RequestParam String hash, @RequestParam String time) {
-        log.info("retrieved hash: " + hash);
-        log.info("retrieved time: " + time);
-        if (Integer.valueOf(hash) == -442696469) {
-            userHash = Integer.valueOf(hash);
-            if (workItersRepositoryCustom == null) {
-                workItersRepositoryCustom = new WorkItersRepositoryCustomImpl(workItersRepository);
-            }
-            long t = Long.valueOf(time);
-            WorkItersEntity entity = new WorkItersEntity();
-            entity.setDdate(new Date(t));
-            entity.setTtime(new Time(t));
-            log.info("adding new entity: ");
-            log.info(entity.getDdate().toString());
-            log.info(entity.getTtime().toString());
-            workItersRepository.save(entity);
-            return ResponseEntity.ok();
-        } else {
-            log.warn("sorry");
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
-
-    /**
-     *
-     * @return just HTTP OK code
-     */
-    @RequestMapping(value = {"/postIter"}, method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity.BodyBuilder getToPostIter() {
-        log.info("get request to postIter");
-        log.info("Returning OK Http Code");
-        return ResponseEntity.ok();
-    }
-
-    private String changeNtoBr(String message) {
-        return Pattern.compile("\n").matcher(message).replaceAll("<br/>");
-    }
-
-    /**
-     * show html string
-     * @return
-     */
-    @RequestMapping(value = {"/"}, method = RequestMethod.GET)
-    public String mainHello() {
-        return changeNtoBr(AppConfig.message);
+        return RestUtils.changeNtoBr(builder.toString());
     }
 
 
