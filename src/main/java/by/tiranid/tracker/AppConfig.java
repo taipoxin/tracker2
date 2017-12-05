@@ -4,54 +4,25 @@ package by.tiranid.tracker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.servlet.MultipartConfigElement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.net.InetAddress;
 
 @SpringBootApplication
 @EnableScheduling
 @Slf4j
 public class AppConfig {
 
-    private static boolean enableTimer = false;
 
-    // start scheduling part
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-
-    /**
-     * fixedRate - интервал между вызовами начиная с начала работы
-     * fixedDelay - интервал между вызовами начиная с окончания работы
-     * show time every 5 seconds
-     */
-    @Scheduled(fixedRate = 5000)
-    public void reportCurrentTime() {
-        if (enableTimer) {
-            log.info("The time is now: " + dateFormat.format(new Date()));
-        }
-
-    }
-
-    // end scheduling part
+    public static void main(String[] args) throws Exception {
+        InetAddress addr = InetAddress.getLocalHost();
+        String server_Ip = addr.getHostAddress();
+        String server_port = "8080";
+        String[] ipArg = {"--server.address=" + server_Ip, "--server.port=" + server_port};
 
 
-    // соответствует <multipart-config> в web.xml
-    @Bean
-    MultipartConfigElement multipartConfigElement() {
-        MultipartConfigFactory factory = new MultipartConfigFactory();
-        factory.setMaxFileSize("128KB");
-        factory.setMaxRequestSize("128KB");
-        return factory.createMultipartConfig();
-    }
-
-
-    public static void main(String[] args){
-        SpringApplication.run(AppConfig.class);
+        log.info("\n\n" + "Loading on " + server_Ip + ":" + server_port + "\n");
+        SpringApplication.run(AppConfig.class, ipArg);
     }
 
 }
