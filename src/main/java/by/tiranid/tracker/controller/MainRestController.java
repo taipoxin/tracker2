@@ -4,7 +4,6 @@ import by.tiranid.tracker.dao.model.EntityUtils;
 import by.tiranid.tracker.dao.model.Greeting;
 import by.tiranid.tracker.dao.model.WorkItersEntity;
 import by.tiranid.tracker.dao.repository.WorkItersRepository;
-import by.tiranid.tracker.dao.repository.custom.WorkItersRepositoryCustom;
 import by.tiranid.tracker.learning.consuming_json.JsonPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ public class MainRestController {
     @Autowired
     private WorkItersRepository workItersRepository;
 
-    private WorkItersRepositoryCustom workItersRepositoryCustom;
 
     private AtomicLong counter = new AtomicLong();
 
